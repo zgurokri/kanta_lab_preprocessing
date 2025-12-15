@@ -24,13 +24,12 @@ def filter_minimal(df,args):
     return df
 
 
-
 def fix_abbreviation(df,args):
     """
     Removes characthers from abbreviation
     """
     col = 'TEST_NAME_ABBREVIATION'
-    abb_df = df[['FINNGENID', 'APPROX_EVENT_DATETIME','TEST_NAME_ABBREVIATION','MEASUREMENT_UNIT']].copy()
+    abb_df = df[['FID', 'EVENT_DATETIME','TEST_NAME_ABBREVIATION','MEASUREMENT_UNIT']].copy()
     pattern = '|'.join(args.config['abbreviation_deletions'])
     df[col] = df[col].replace(pattern,'',regex=True)
     #log changes
@@ -40,7 +39,7 @@ def fix_abbreviation(df,args):
 
     # replace problematic characters in abbrevation (strange minus sign)
     values = args.config['abbreviation_replacements']
-    abb_df = df[['FINNGENID', 'APPROX_EVENT_DATETIME','TEST_NAME_ABBREVIATION','MEASUREMENT_UNIT']].copy()
+    abb_df = df[['FID', 'EVENT_DATETIME','TEST_NAME_ABBREVIATION','MEASUREMENT_UNIT']].copy()
     for rep in args.config['abbreviation_replacements']:
         df.loc[:,col] = df.loc[:,col].replace(rep[0],rep[1],regex=True)
      
@@ -70,6 +69,39 @@ def get_coding_map(df,args):
     df.loc[:,col] = df.loc[:,col].map(args.config['thl_sote_map'])
     # SECOND ROUND
     # create column with mappable name
+    print("\n=== DEBUG: CODING_SYSTEM DIAGNOSTICS ===")
+
+    col = df["CODING_SYSTEM"].astype(str)
+
+    print(f"Total rows: {len(col)}")
+
+    # Count NA, empty, whitespace values
+    n_na = col.isna().sum()
+    n_empty = (col == "").sum()
+    n_space = (col.str.strip() == "").sum()
+    n_no_dot = (~col.str.contains(r'\.', regex=True, na=False)).sum()
+
+    print(f"NA values:              {n_na}")
+    print(f"Empty strings:          {n_empty}")
+    print(f"Whitespace-only:        {n_space}")
+    print(f"Values without dot '.': {n_no_dot}")
+
+    # Show examples of problematic values
+    print("\nExamples of values WITHOUT DOT:")
+    print(col[~col.str.contains(r'\.', regex=True, na=False)].head(20).tolist())
+
+    print("\nExamples of EMPTY or WHITESPACE values:")
+    print(col[col.str.strip() == ""].head(20).tolist())
+
+    # Show extremely short/strange values
+    print("\nExamples of VERY SHORT values (len < 5):")
+    print(col[col.str.len() < 5].head(20).tolist())
+
+    print("\nExamples of VERY LONG values (len > 50):")
+    print(col[col.str.len() > 50].head(20).tolist())
+
+    print("\n=== END DEBUG ===\n")
+
     col = "CODING_SYSTEM_MAP"
     df["TMP_SYSTEM"] =  df['CODING_SYSTEM'].str.replace("1.2.246.10.","").str.replace("1.2.246.537.10.","").str.split('.',expand=True,n=1)[0]
     # I need this step since i create some strange entries with value 1 for 1.2.246.537.6.3.2006 and of the sort
@@ -80,7 +112,7 @@ def get_coding_map(df,args):
 def get_lab_abbrv(df,args):
     """
     It assigns TEST_NAME_ABBREVIATION, keeping the local name if source is local (TEST_ID==0) or mapping it if source is THL (TEST_ID ==1). If the value is missing from the mapping it will be mapped to NA
-    N.B.LAB ABBREVIATION is already read on reading from paikallinentutkimusnimike (from config) so no need to create it, just update
+    N.B.LAB ABBREVIATION is already read on reading from paikallinentutkimusnimike_selite (from config) so no need to create it, just update
     """
     col="TEST_NAME_ABBREVIATION"
     df[col] =df[col].str.lower()     #fix lab abbrevation in general before updated mapping
@@ -103,12 +135,12 @@ def get_lab_abbrv(df,args):
 def lab_id_source(df,args):
     """
     Update/create TEST_ID and TEST_ID SOURCE.
-    In this function we uses local_lab_id (paikallinentutkimusnimikeid)  and thl lab_id (laboratoriotutkimusnimikeid) if possible.
+    In this function we uses local_lab_id (paikallinentutkimusnimike_koodi)  and thl lab_id (laboratoriotutkimusnimike) if possible.
     """
     
-    local_mask =  (df['laboratoriotutkimusnimikeid'] == 'NA')
+    local_mask =  (df['laboratoriotutkimusnimike'] == 'NA')
     df["TEST_ID_IS_NATIONAL"] = np.where(local_mask,"0","1")
-    df["TEST_ID"] = np.where(local_mask,df.paikallinentutkimusnimikeid,df.laboratoriotutkimusnimikeid)
+    df["TEST_ID"] = np.where(local_mask,df.paikallinentutkimusnimike_koodi,df.laboratoriotutkimusnimike)
     return df
     
 def filter_measurement_status(df,args):
@@ -144,12 +176,12 @@ def fix_date(df,args):
     Joins day and time to make a single date field.
     """
     
-    #df['APPROX_EVENT_DATETIME'] = pd.to_datetime(df.APPROX_EVENT_DAY +" "+df.TIME,errors='coerce').dt.strftime(args.config['date_time_format'])
-    df['APPROX_EVENT_DATETIME'] =df.APPROX_EVENT_DAY +"T"+df.TIME
-    err_mask = pd.to_datetime(df.APPROX_EVENT_DATETIME, format=args.config['date_time_format'], errors='coerce').notna()
+    #df['APPROX_EVENT_DAYTIME'] = pd.to_datetime(df.APPROX_EVENT_DAY +" "+df.TIME,errors='coerce').dt.strftime(args.config['date_time_format'])
+    df['EVENT_DATETIME'] =df.EVENT_DATE +"T"+df.TIME
+    err_mask = pd.to_datetime(df.EVENT_DATETIME, format=args.config['date_time_format'], errors='coerce').isna()
     err_df = df[err_mask].copy()
     err_df['ERR'] = 'DATE'
-    err_df['ERR_VALUE'] = err_df.APPROX_EVENT_DAY +" "+err_df.TIME
+    err_df['ERR_VALUE'] = err_df.EVENT_DATE +" "+err_df.TIME
     err_df[args.config['err_cols']].to_csv(args.err_file, mode='a', index=False, header=False,sep="\t")
     return df[~err_mask]
 
@@ -173,7 +205,6 @@ def initialize_out_cols(df,args):
     Renames columns
     Initalizes source columns before edits
     """
-
     df = df.rename(columns = args.config['rename_cols'])
     # These columns need be copied back to original name
     for col in args.config['source_cols']:

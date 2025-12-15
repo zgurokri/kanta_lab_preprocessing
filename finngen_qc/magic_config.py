@@ -1,49 +1,51 @@
 config = {
     # DIRECT COLUMN MAPPING
     'rename_cols' : {
-        'FINNGENID':                      'FINNGENID',
+        'FID':                      'FID',
         'EVENT_AGE' :                     'EVENT_AGE',
-        'tutkimuskoodistonjarjestelmaid': 'CODING_SYSTEM',
-        'paikallinentutkimusnimike':      'TEST_NAME_ABBREVIATION',
+        'tutkimuskoodistonjarjestelma': 'CODING_SYSTEM',
+        'paikallinentutkimusnimike_selite':      'TEST_NAME_ABBREVIATION',
         'tutkimustulosarvo':              'MEASUREMENT_VALUE',
         'tutkimustulosyksikko':           'MEASUREMENT_UNIT',
-        'tutkimusvastauksentilaid':       'MEASUREMENT_STATUS',
-        'tuloksenpoikkeavuusid':          'TEST_OUTCOME',
-        'viitearvoryhma':                 'REFERENCE_RANGE_GROUP',
-        'viitevalialkuarvo':              'REFERENCE_RANGE_LOWER_VALUE',
-        'viitevalialkuyksikko':           'REFERENCE_RANGE_LOWER_UNIT',
-        'viitevaliloppuarvo':             'REFERENCE_RANGE_UPPER_VALUE',
-        'viitevaliloppuyksikko':          'REFERENCE_RANGE_UPPER_UNIT',
+        'tutkimusvastauksentila':       'MEASUREMENT_STATUS',
+        'tuloksenpoikkeavuus':          'TEST_OUTCOME',
+        'viitevaliteksti': 'REFERENCE_VALUE_TEXT',
+#        'viitearvoryhma':                 'REFERENCE_RANGE_GROUP',
+#        'viitevalialkuarvo':              'REFERENCE_RANGE_LOWER_VALUE',
+#        'viitevalialkuyksikko':           'REFERENCE_RANGE_LOWER_UNIT',
+#        'viitevaliloppuarvo':             'REFERENCE_RANGE_UPPER_VALUE',
+#        'viitevaliloppuyksikko':          'REFERENCE_RANGE_UPPER_UNIT',
         'tutkimuksenlisatieto' :          'MEASUREMENT_EXTRA_INFO',
         'tutkimustulosteksti':            'MEASUREMENT_FREE_TEXT',
-        'antaja_organisaatioid':          'SERVICE_PROVIDER_ID',
-        'lausunnontilaid':                'STATEMENT_ID',
-   	'lausuntoteksti':                 'STATEMENT_TEXT'  
+        'palvelutuottaja_organisaatio':          'SERVICE_PROVIDER_ID'
+#        'lausunnontilaid':                'STATEMENT_ID',
+#   	'lausuntoteksti':                 'STATEMENT_TEXT'  
         
     },
     "source_cols" : ['MEASUREMENT_VALUE','MEASUREMENT_UNIT','TEST_NAME_ABBREVIATION'],
     # ACCESSORY COLUMNS
-    'other_cols' : ['paikallinentutkimusnimikeid','laboratoriotutkimusnimikeid','APPROX_EVENT_DAY','TIME','ROW_ID'],
+    'other_cols' : ['paikallinentutkimusnimike_koodi','laboratoriotutkimusnimike','EVENT_DATE','TIME','ROW_ID','SEX'],
     # Cols used for sorting in the wdl.
     # N.B. the order is important as it is kept in the grepping!
-    'sort_cols' : ['FINNGENID','APPROX_EVENT_DAY','TIME','laboratoriotutkimusnimikeid','paikallinentutkimusnimikeid','tutkimusvastauksentilaid','tutkimustulosarvo','tutkimustulosyksikko','tutkimustulosteksti'],
+    'sort_cols' : ['FID','EVENT_DATE','TIME','laboratoriotutkimusnimike','paikallinentutkimusnimike_koodi','tutkimusvastauksentila','tutkimustulosarvo','tutkimustulosyksikko','tutkimustulosteksti'],
     # LIST OF OUTPUT COLUMNS TO INCLUDE (VALUES ABOVE PLUS NEWLY GENERATED COLUMNS)
     'out_cols' :    [
         'ROW_ID',
-        'FINNGENID',
+        'FID',
         'EVENT_AGE',
-        'APPROX_EVENT_DATETIME',
+        'EVENT_DATETIME',
         'TEST_ID',
         'TEST_ID_IS_NATIONAL',
         'CODING_SYSTEM',
         'CODING_SYSTEM_MAP',
         'TEST_OUTCOME',
         'MEASUREMENT_STATUS',
-        'REFERENCE_RANGE_GROUP',
-        'REFERENCE_RANGE_LOWER_VALUE',
-        'REFERENCE_RANGE_LOWER_UNIT',
-        'REFERENCE_RANGE_UPPER_VALUE',
-        'REFERENCE_RANGE_UPPER_UNIT',
+        'REFERENCE_VALUE_TEXT',
+ #       'REFERENCE_RANGE_GROUP',
+ #       'REFERENCE_RANGE_LOWER_VALUE',
+ #       'REFERENCE_RANGE_LOWER_UNIT',
+ #       'REFERENCE_RANGE_UPPER_VALUE',
+ #       'REFERENCE_RANGE_UPPER_UNIT',
         'cleaned::TEST_NAME_ABBREVIATION',
         'cleaned::MEASUREMENT_VALUE',
         'cleaned::MEASUREMENT_UNIT',
@@ -60,8 +62,9 @@ config = {
         'MEASUREMENT_EXTRA_INFO',
         'MEASUREMENT_FREE_TEXT',
         'SERVICE_PROVIDER_ID',
-        'STATEMENT_ID',
-   	'STATEMENT_TEXT'  
+        'SEX'
+#        'STATEMENT_ID',
+#   	'STATEMENT_TEXT'  
     ],
     'cleaned_cols':    [
         'TEST_NAME_ABBREVIATION',
@@ -69,7 +72,7 @@ config = {
         'MEASUREMENT_UNIT',
     ],
     
-    'err_cols':['ROW_ID','FINNGENID','APPROX_EVENT_DATETIME','ERR','ERR_VALUE'],
+    'err_cols':['ROW_ID','FID','EVENT_DATETIME','ERR','ERR_VALUE'],
     'date_time_format': "%Y-%m-%dT%H:%M:%S",
 
     #REJECTION LINES
@@ -184,3 +187,4 @@ config = {
         'ADD_INFO:measurementUnit':"MEASUREMENT_UNIT"
     }
 }
+
