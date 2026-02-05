@@ -1,20 +1,16 @@
 config = {
     'cols' :    [
         'ROW_ID',
-        'FINNGENID',
+        'FID',
         'EVENT_AGE',
-        'APPROX_EVENT_DATETIME',
+        'EVENT_DATETIME',
         'TEST_ID',
         'TEST_ID_IS_NATIONAL',
         'CODING_SYSTEM',
         'CODING_SYSTEM_MAP',
         'TEST_OUTCOME',
         'MEASUREMENT_STATUS',
-        'REFERENCE_RANGE_GROUP',
-        'REFERENCE_RANGE_LOWER_VALUE',
-        'REFERENCE_RANGE_LOWER_UNIT',
-        'REFERENCE_RANGE_UPPER_VALUE',
-        'REFERENCE_RANGE_UPPER_UNIT',
+        'REFERENCE_VALUE_TEXT',
         'cleaned::TEST_NAME_ABBREVIATION',
         'cleaned::MEASUREMENT_VALUE',
         'cleaned::MEASUREMENT_UNIT',
@@ -31,8 +27,6 @@ config = {
         'MEASUREMENT_EXTRA_INFO',
         'MEASUREMENT_FREE_TEXT',
         'SERVICE_PROVIDER_ID',
-        'STATEMENT_ID',
-        'STATEMENT_TEXT',
         'SEX'
         
     ],
@@ -45,12 +39,10 @@ config = {
     ],
     'sensitive_cols':[
         'MEASUREMENT_FREE_TEXT',
-        'STATEMENT_ID',
-        'STATEMENT_TEXT'
     ],
 
-    'err_cols':['ROW_ID','FINNGENID','APPROX_EVENT_DATETIME','ERR','ERR_VALUE'],
-    'dup_cols':['FINNGENID','APPROX_EVENT_DATETIME','harmonization_omop::OMOP_ID','cleaned::TEST_NAME_ABBREVIATION','extracted::MEASUREMENT_VALUE_MERGED','TEST_OUTCOME','extracted::TEST_OUTCOME_TEXT','extracted::IS_POS'],
+    'err_cols':['ROW_ID','FID','EVENT_DATETIME','ERR','ERR_VALUE'],
+    'dup_cols':['FID','EVENT_DATETIME','harmonization_omop::OMOP_ID','cleaned::TEST_NAME_ABBREVIATION','extracted::MEASUREMENT_VALUE_MERGED','TEST_OUTCOME','extracted::TEST_OUTCOME_TEXT','extracted::IS_POS'],
 
     'omop_unit_map':'finngen_qc/data/harmonization_counts.txt',
     'posneg_map':'core/data/negpos_mapping.tsv',
