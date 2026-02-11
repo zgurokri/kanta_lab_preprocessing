@@ -39,7 +39,7 @@ def all_filters(df,args):
     df = (
         df
         .pipe(extract_all,args)
-        .pipe(qc,args)
+        #.pipe(qc,args)
         .pipe(all_outcome,args)
     )
     return df
