@@ -30,7 +30,7 @@ def fix_abbreviation(df,args):
     Removes characthers from abbreviation
     """
     col = 'TEST_NAME_ABBREVIATION'
-    abb_df = df[['ROW_ID', 'APPROX_EVENT_DATETIME','TEST_NAME_ABBREVIATION','MEASUREMENT_UNIT']].copy()
+    abb_df = df[['ROW_ID', 'EVENT_DATETIME','TEST_NAME_ABBREVIATION','MEASUREMENT_UNIT']].copy()
     pattern = '|'.join(args.config['abbreviation_deletions'])
     df[col] = df[col].replace(pattern,'',regex=True)
     #log changes
@@ -40,7 +40,7 @@ def fix_abbreviation(df,args):
 
     # replace problematic characters in abbrevation (strange minus sign)
     values = args.config['abbreviation_replacements']
-    abb_df = df[['ROW_ID', 'APPROX_EVENT_DATETIME','TEST_NAME_ABBREVIATION','MEASUREMENT_UNIT']].copy()
+    abb_df = df[['ROW_ID', 'EVENT_DATETIME','TEST_NAME_ABBREVIATION','MEASUREMENT_UNIT']].copy()
     for rep in args.config['abbreviation_replacements']:
         df.loc[:,col] = df.loc[:,col].replace(rep[0],rep[1],regex=True)
      
@@ -144,12 +144,12 @@ def fix_date(df,args):
     Joins day and time to make a single date field.
     """
     
-    #df['APPROX_EVENT_DATETIME'] = pd.to_datetime(df.APPROX_EVENT_DAY +" "+df.TIME,errors='coerce').dt.strftime(args.config['date_time_format'])
-    df['APPROX_EVENT_DATETIME'] =df.APPROX_EVENT_DAY +"T"+df.TIME
-    err_mask = pd.to_datetime(df.APPROX_EVENT_DATETIME, format=args.config['date_time_format'], errors='coerce').isna()
+    #df['EVENT_DATETIME'] = pd.to_datetime(df.EVENT_DATE +" "+df.TIME,errors='coerce').dt.strftime(args.config['date_time_format'])
+    df['EVENT_DATETIME'] =df.EVENT_DATE +"T"+df.TIME
+    err_mask = pd.to_datetime(df.EVENT_DATETIME, format=args.config['date_time_format'], errors='coerce').isna()
     err_df = df[err_mask].copy()
     err_df['ERR'] = 'DATE'
-    err_df['ERR_VALUE'] = err_df.APPROX_EVENT_DAY +" "+err_df.TIME
+    err_df['ERR_VALUE'] = err_df.EVENT_DATE +" "+err_df.TIME
     err_df[args.config['err_cols']].to_csv(args.err_file, mode='a', index=False, header=False,sep="\t")
     return df[~err_mask]
 

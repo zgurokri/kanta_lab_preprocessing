@@ -142,7 +142,7 @@ def fix_unit_based_on_abbreviation(df,args):
     # Mask 2: Specifically targeting the "NA" clean fix cases
     mask_na_fix = (df['source_unit_clean_fix'] == "NA")
     unit_fix_mask = fix_mask | mask_na_fix
-    unit_df = df.loc[unit_fix_mask,['ROW_ID', 'APPROX_EVENT_DATETIME','TEST_NAME_ABBREVIATION','MEASUREMENT_UNIT','source_unit_clean_fix']].copy()
+    unit_df = df.loc[unit_fix_mask,['ROW_ID', 'EVENT_DATETIME','TEST_NAME_ABBREVIATION','MEASUREMENT_UNIT','source_unit_clean_fix']].copy()
     # CHANGES
     df.loc[unit_fix_mask,"harmonization_omop::IS_UNIT_VALID"] = "unit_fixed"
     df.loc[unit_fix_mask,col] = df.loc[unit_fix_mask,"source_unit_clean_fix"]
