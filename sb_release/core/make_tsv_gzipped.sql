@@ -1,9 +1,9 @@
 SELECT
   ROW_ID :: Int64 AS ROW_ID,  -- Cast to Int64 to ensure numerical sorting
-  FINNGENID,
+  FID,
   SEX,
   EVENT_AGE,
-  APPROX_EVENT_DATETIME,
+  EVENT_DATETIME,
   multiIf(`harmonization_omop::OMOP_ID` = '-1', 'NA', `harmonization_omop::OMOP_ID` = '0', 'NA', `harmonization_omop::OMOP_ID`) AS OMOP_CONCEPT_ID,
   `cleaned::TEST_NAME_ABBREVIATION` AS TEST_NAME,
   `harmonization_omop::MEASUREMENT_UNIT` AS MEASUREMENT_UNIT_HARMONIZED,

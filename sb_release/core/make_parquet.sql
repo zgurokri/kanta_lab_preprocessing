@@ -1,9 +1,9 @@
 SELECT
   ROW_ID :: Int64 AS ROW_ID,  -- Cast to Int64 to ensure numerical sorting
-  FINNGENID,
+  FID,
   SEX,
-  EVENT_AGE :: Float64 AS EVENT_AGE,
-  concat(APPROX_EVENT_DATETIME, ':00') :: DateTime64(3, 'UTC') AS APPROX_EVENT_DATETIME,
+  nullIf(EVENT_AGE, 'NA') :: Nullable(Float64) AS EVENT_AGE,
+  EVENT_DATETIME :: DateTime64(3, 'UTC') AS EVENT_DATETIME,
   TEST_NAME,
   nullIf(OMOP_CONCEPT_ID, 'NA') :: Nullable(String) AS OMOP_CONCEPT_ID,
   nullIf(MEASUREMENT_UNIT_HARMONIZED, 'NA') :: Nullable(String) AS MEASUREMENT_UNIT_HARMONIZED,
