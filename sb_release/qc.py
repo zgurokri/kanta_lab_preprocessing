@@ -10,7 +10,7 @@ def execute_and_store_results(file_path):
     FROM read_parquet(?)
     UNION ALL
     SELECT
-        concat('Number of FINNGENIDs: ', replace(CAST(count(DISTINCT FINNGENID) AS VARCHAR), ',', '\\u00A0')) as result
+        concat('Number of FIDs: ', replace(CAST(count(DISTINCT FID) AS VARCHAR), ',', '\\u00A0')) as result
     FROM read_parquet(?)
     UNION ALL
     SELECT
