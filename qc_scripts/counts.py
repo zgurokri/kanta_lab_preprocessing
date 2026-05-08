@@ -46,7 +46,7 @@ def analyze_omop_data(file_path, columns, binary_columns, output_folder, test_mo
     # Combine all SELECT clauses
     select_clauses = [
         f'{omop_column}',
-        'COUNT(DISTINCT finngenid) as finngenid_count',
+        'COUNT(DISTINCT fid) as fid_count',
         'COUNT(*) as row_count'
     ] + non_na_clauses + zero_clauses
     
@@ -79,13 +79,13 @@ def analyze_omop_data(file_path, columns, binary_columns, output_folder, test_mo
     print("Calculating overall statistics...")
     
     overall_clauses = [
-        'COUNT(DISTINCT finngenid) as finngenid_count'
+        'COUNT(DISTINCT fid) as fid_count'
     ] + non_na_clauses + zero_clauses
     
     overall_query = f"""
     SELECT {', '.join(overall_clauses)}
     FROM data_view
-    WHERE finngenid IS NOT NULL
+    WHERE fid IS NOT NULL
     """
     
     overall_result = con.execute(overall_query).fetchone()
@@ -105,7 +105,7 @@ def analyze_omop_data(file_path, columns, binary_columns, output_folder, test_mo
     # Prepare the table structure
     # Calculate column widths
     name_width = max(len("NAME"), max(len(str(row[0])) for row in results) if results else 10)
-    id_width = max(len("FINNGENID"), 10)
+    id_width = max(len("FID"), 10)
     
     # Column widths for each analyzed column (non-NA counts)
     col_widths = {col: max(len(col.upper() + "_COUNT"), 10) for col in columns}
@@ -116,7 +116,7 @@ def analyze_omop_data(file_path, columns, binary_columns, output_folder, test_mo
     # Create header
     header_parts = [
         "NAME".ljust(name_width),
-        "FINNGENID".rjust(id_width)
+        "FID".rjust(id_width)
     ]
     header_parts.extend([f"{col.upper()}_COUNT".rjust(col_widths[col]) for col in columns])
     header_parts.extend([f"{col.upper()}_ZEROS".rjust(binary_widths[col]) for col in binary_columns])
@@ -130,7 +130,7 @@ def analyze_omop_data(file_path, columns, binary_columns, output_folder, test_mo
     output += "| " + " | ".join(separator_parts) + " |\n"
     
     # Store results for TSV output
-    overall_stats = {"finngenid": overall_result[0]}
+    overall_stats = {"fid": overall_result[0]}
     overall_row = ["ALL".ljust(name_width), f"{overall_result[0]:,}".rjust(id_width)]
     
     # Add overall stats for regular columns
@@ -152,15 +152,15 @@ def analyze_omop_data(file_path, columns, binary_columns, output_folder, test_mo
     omop_stats = []
     for row in results:
         omop_id = row[0]
-        finngenid_count = row[1]
+        fid_count = row[1]
         
         # Store this OMOP ID's stats
-        omop_stat = {"omop_id": omop_id, "finngenid": finngenid_count}
+        omop_stat = {"omop_id": omop_id, "fid": fid_count}
         
         # Create row for this OMOP ID
-        row_parts = [str(omop_id).ljust(name_width), f"{finngenid_count:,}".rjust(id_width)]
+        row_parts = [str(omop_id).ljust(name_width), f"{fid_count:,}".rjust(id_width)]
         
-        # Add counts for regular columns (skip omop_id, finngenid_count, row_count)
+        # Add counts for regular columns (skip omop_id, fid_count, row_count)
         idx = 3
         for col in columns:
             count = row[idx]
@@ -193,20 +193,20 @@ def analyze_omop_data(file_path, columns, binary_columns, output_folder, test_mo
     
     with open(tsv_file, 'w') as f:
         # Write header
-        header_parts = ["NAME", "FINNGENID"]
+        header_parts = ["NAME", "FID"]
         header_parts.extend([f"{col.upper()}_COUNT" for col in columns])
         header_parts.extend([f"{col.upper()}_ZEROS" for col in binary_columns])
         f.write("\t".join(header_parts) + "\n")
         
         # Write ALL row using stored overall_stats
-        all_row = ["ALL", str(overall_stats["finngenid"])]
+        all_row = ["ALL", str(overall_stats["fid"])]
         all_row.extend([str(overall_stats[col]) for col in columns])
         all_row.extend([str(overall_stats[f"{col}_zeros"]) for col in binary_columns])
         f.write("\t".join(all_row) + "\n")
         
         # Write OMOP ID rows using stored omop_stats
         for stat in omop_stats:
-            row = [str(stat["omop_id"]), str(stat["finngenid"])]
+            row = [str(stat["omop_id"]), str(stat["fid"])]
             row.extend([str(stat[col]) for col in columns])
             row.extend([str(stat[f"{col}_zeros"]) for col in binary_columns])
             f.write("\t".join(row) + "\n")
@@ -224,10 +224,10 @@ if __name__ == "__main__":
         epilog="""
         Examples:
         # Basic usage with regular columns only
-        python script.py data.parquet -c measurement_value,finngenid -o ./output
+        python script.py data.parquet -c measurement_value,fid -o ./output
         
         # With binary columns
-        python script.py data.parquet -c measurement_value,finngenid -b trait1,trait2 -o ./output
+        python script.py data.parquet -c measurement_value,fid -b trait1,trait2 -o ./output
         
         # Analyze only top 10 OMOP IDs
         python script.py data.parquet -c measurement_value -b trait1 -o ./output --top-n 10
@@ -244,7 +244,7 @@ if __name__ == "__main__":
                         help='Path to the Parquet file')
     parser.add_argument('-c', '--columns', 
                         required=True,
-                        help='Comma-separated list of columns to analyze for non-NA counts (e.g., measurement_value,finngenid)')
+                        help='Comma-separated list of columns to analyze for non-NA counts (e.g., measurement_value,fid)')
     parser.add_argument('-b', '--binary-columns', 
                         default='',
                         help='Comma-separated list of binary columns to analyze for count of 0s (optional)')
