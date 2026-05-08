@@ -14,7 +14,7 @@ config = {
         #'viitevalialkuyksikko':            'REFERENCE_RANGE_LOWER_UNIT',
         #'viitevaliloppuarvo':              'REFERENCE_RANGE_UPPER_VALUE',
         #'viitevaliloppuyksikko':           'REFERENCE_RANGE_UPPER_UNIT',
-        'tutkimustulosteksti':            'MEASUREMENT_FREE_TEXT'
+        'tutkimustulosteksti':            'MEASUREMENT_FREE_TEXT',
         'tutkimuksenlisatieto' :          'MEASUREMENT_EXTRA_INFO',
         'palvelutuottaja_organisaatio':          'SERVICE_PROVIDER_ID',
         #'lausunnontilaid':                'STATEMENT_ID',
@@ -73,7 +73,7 @@ config = {
     ],
     
     'err_cols':['ROW_ID','EVENT_DATETIME','ERR','ERR_VALUE'],
-    'date_time_format': "%Y-%m-%dT%H:%M",
+    'date_time_format': "%Y-%m-%dT%H:%M:%S",
 
     #REJECTION LINES
     'NA_kws': ['Puuttuu','""',"TYHJÄ","_","NULL","-1"], # FOR ALL COLUMNS DEFAULT
