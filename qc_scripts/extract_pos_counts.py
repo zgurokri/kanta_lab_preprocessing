@@ -102,7 +102,7 @@ def process_data(input_file, map_file, pn_orig=None, plus_orig=None, test_lines=
         sample = pd.read_csv(input_file, sep='\t', nrows=0)
         actual_cols = sample.columns.tolist()
         col_map = {
-            'id': next(c for c in actual_cols if c.upper() == 'FIDID'),
+            'id': next(c for c in actual_cols if c.upper() == 'FID'),
             'text': next(c for c in actual_cols if c.upper() == 'MEASUREMENT_FREE_TEXT'),
             'pos': next(c for c in actual_cols if c.upper() == 'EXTRACTED::IS_POS'),
             'omop': next(c for c in actual_cols if c.upper() == 'HARMONIZATION_OMOP::OMOP_ID')
