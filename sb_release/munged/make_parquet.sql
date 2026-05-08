@@ -1,9 +1,9 @@
 SELECT
   ROW_ID :: Int64 AS ROW_ID,  -- Cast to Int64 to ensure numerical sorting
-  FINNGENID,
+  FID,
   SEX,
-  EVENT_AGE :: Float64 AS EVENT_AGE,
-  concat(APPROX_EVENT_DATETIME, ':00') :: DateTime64(3, 'UTC') AS APPROX_EVENT_DATETIME,
+  nullIf(EVENT_AGE, 'NA') :: Nullable(Float64) AS EVENT_AGE,
+  EVENT_DATETIME :: DateTime64(3, 'UTC') AS EVENT_DATETIME,
   
   -- OMOP harmonization
   nullIf(OMOP_CONCEPT_ID, 'NA') :: Nullable(String) AS OMOP_CONCEPT_ID,
@@ -35,11 +35,7 @@ SELECT
   
   -- Measurement status and reference ranges
   nullIf(MEASUREMENT_STATUS, 'NA') :: Nullable(String) AS MEASUREMENT_STATUS,
-  nullIf(REFERENCE_RANGE_GROUP, 'NA') :: Nullable(String) AS REFERENCE_RANGE_GROUP,
-  nullIf(REFERENCE_RANGE_LOW_VALUE, 'NA') :: Nullable(Float64) AS REFERENCE_RANGE_LOW_VALUE,
-  nullIf(REFERENCE_RANGE_LOW_UNIT, 'NA') :: Nullable(String) AS REFERENCE_RANGE_LOW_UNIT,
-  nullIf(REFERENCE_RANGE_HIGH_VALUE, 'NA') :: Nullable(Float64) AS REFERENCE_RANGE_HIGH_VALUE,
-  nullIf(REFERENCE_RANGE_HIGH_UNIT, 'NA') :: Nullable(String) AS REFERENCE_RANGE_HIGH_UNIT,
+  nullIf(REFERENCE_VALUE_TEXT, 'NA') :: Nullable(String) AS REFERENCE_VALUE_TEXT,
   
   -- Coding systems
   nullIf(CODING_SYSTEM_ORG, 'NA') :: Nullable(String) AS CODING_SYSTEM_ORG,

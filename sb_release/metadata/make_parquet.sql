@@ -2,7 +2,7 @@ SELECT
   ROW_ID :: Int64 AS ROW_ID,  -- Cast to Int64 to ensure numerical sorting
   FID,
   SEX,
-  EVENT_AGE :: Float64 AS EVENT_AGE,
+  nullIf(EVENT_AGE, 'NA') :: Nullable(Float64) AS EVENT_AGE,
   EVENT_DATETIME :: DateTime64(3, 'UTC') AS EVENT_DATETIME,
   
   -- OMOP harmonization
